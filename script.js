@@ -45,6 +45,11 @@ let timerInterval = null;
 let questionTimer = QUESTION_TIME;
 let questionTimerInterval = null;
 
+// DOM 元素
+const introPanel = document.getElementById('intro-panel');
+const testPanel = document.getElementById('test-panel');
+const resultPanel = document.getElementById('result-panel');
+const startButton = document.getElementById('start-button');
 const questionText = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options');
 const progressLabel = document.getElementById('progress');
@@ -52,10 +57,84 @@ const scoreLabel = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const questionTimerDisplay = document.getElementById('question-timer');
 const nextButton = document.getElementById('next-button');
-const resultPanel = document.getElementById('result-panel');
-const resultText = document.getElementById('result-text');
 const restartButton = document.getElementById('restart-button');
+const correctCountElement = document.getElementById('correct-count');
+const iqScoreElement = document.getElementById('iq-score');
+const percentileElement = document.getElementById('percentile');
+const percentileTextElement = document.getElementById('percentile-text');
+const higherThanElement = document.getElementById('higher-than');
+const userMarker = document.getElementById('user-marker');
 
+// 标准正态分布 CDF 近似（来自 Abramowitz and Stegun）
+function normCDF(x) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(x));
+  const d = 0.3989423 * Math.exp(-x * x / 2);
+  let prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  if (x > 0) prob = 1 - prob;
+  return prob;
+}
+
+// 计算 IQ 和百分比排名
+function calculateIQStats(correct, total) {
+  // 简单映射：正确率转换为 IQ（均值 100，标准差 15）
+  // 假设正确率呈正态分布，均值 0.5（15/30），标准差 0.15
+  const meanCorrect = total * 0.5;
+  const stdCorrect = total * 0.15;
+  const z = (correct - meanCorrect) / stdCorrect;
+  const iq = 100 + z * 15;
+  // 限制 IQ 范围在 55-145 之间（3个标准差）
+  const clampedIQ = Math.max(55, Math.min(145, Math.round(iq)));
+  
+  // 计算百分比排名
+  const percentile = normCDF(z) * 100;
+  const clampedPercentile = Math.max(0.1, Math.min(99.9, percentile));
+  
+  return {
+    iq: clampedIQ,
+    percentile: clampedPercentile,
+    higherThan: (100 - clampedPercentile).toFixed(1)
+  };
+}
+
+// 更新钟形曲线上的用户标记
+function updateBellCurve(iq) {
+  // IQ 范围：55-145，对应曲线宽度 0%-100%
+  const minIQ = 55;
+  const maxIQ = 145;
+  const percentage = (iq - minIQ) / (maxIQ - minIQ) * 100;
+  userMarker.style.left = `${percentage}%`;
+}
+
+// 显示结果页面
+function showResultPanel() {
+  const stats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
+  
+  correctCountElement.textContent = correctCount;
+  iqScoreElement.textContent = stats.iq;
+  percentileElement.textContent = stats.percentile.toFixed(1) + '%';
+  percentileTextElement.textContent = stats.percentile.toFixed(1) + '%';
+  higherThanElement.textContent = stats.higherThan + '%';
+  
+  updateBellCurve(stats.iq);
+  
+  testPanel.classList.add('hidden');
+  resultPanel.classList.remove('hidden');
+}
+
+// 开始测试
+function startTest() {
+  introPanel.classList.add('hidden');
+  testPanel.classList.remove('hidden');
+  
+  currentIndex = 0;
+  correctCount = 0;
+  selectedOption = null;
+  
+  startTimer();
+  loadQuestion();
+}
+
+// 计时器函数
 function startTimer() {
   timer = TIMER_DURATION;
   updateTimerDisplay();
@@ -95,6 +174,7 @@ function updateQuestionTimer() {
   questionTimerDisplay.textContent = `${seconds}s`;
 }
 
+// 加载题目
 function loadQuestion() {
   if (currentIndex >= TOTAL_QUESTIONS || currentIndex >= questionBank.length) {
     finishTest();
@@ -142,25 +222,24 @@ function nextQuestion() {
 function finishTest() {
   clearInterval(timerInterval);
   clearInterval(questionTimerInterval);
-  const iq = 90 + correctCount * 2;
-  resultText.textContent = `你答对 ${correctCount} 题，估计 IQ 约为 ${iq}（仅供娱乐）。`;
-  resultPanel.classList.remove('hidden');
-  document.getElementById('question-card').classList.add('hidden');
-  nextButton.classList.add('hidden');
+  showResultPanel();
 }
 
 function restartTest() {
   currentIndex = 0;
   correctCount = 0;
+  selectedOption = null;
+  
   resultPanel.classList.add('hidden');
-  document.getElementById('question-card').classList.remove('hidden');
-  nextButton.classList.remove('hidden');
-  startTimer();
-  loadQuestion();
+  introPanel.classList.remove('hidden');
 }
 
-nextButton.addEventListener('click', () => nextQuestion());
-restartButton.addEventListener('click', () => restartTest());
+// 事件监听
+startButton.addEventListener('click', startTest);
+nextButton.addEventListener('click', nextQuestion);
+restartButton.addEventListener('click', restartTest);
 
-startTimer();
-loadQuestion();
+// 初始化：显示介绍页面
+introPanel.classList.remove('hidden');
+testPanel.classList.add('hidden');
+resultPanel.classList.add('hidden');

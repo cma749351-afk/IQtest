@@ -184,3 +184,161 @@ button.secondary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* 介绍页面 */
+.intro-panel {
+  background: var(--card);
+  border-radius: 28px;
+  padding: 48px 32px;
+  text-align: center;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.intro-content h1 {
+  font-size: clamp(2.2rem, 3.2vw, 3rem);
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, var(--accent), #5be5c5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.intro-subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin: 0 0 36px;
+}
+
+.intro-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin: 36px 0;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 200px;
+}
+
+.feature-icon {
+  font-size: 2rem;
+}
+
+.feature-text {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.intro-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto 36px;
+}
+
+.primary.large {
+  padding: 18px 42px;
+  font-size: 1.2rem;
+}
+
+.intro-note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 24px 0 0;
+}
+
+/* 结果页面统计 */
+#result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 32px 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* 钟形曲线 */
+.bell-curve-container {
+  margin: 40px 0;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+}
+
+.bell-curve-container h3 {
+  margin: 0 0 20px;
+  font-size: 1.3rem;
+}
+
+.bell-curve {
+  position: relative;
+  height: 160px;
+  margin: 0 0 30px;
+}
+
+.curve {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, rgba(91, 229, 197, 0.15), transparent);
+  border-radius: 50% 50% 0 0;
+  clip-path: ellipse(50% 100% at 50% 100%);
+}
+
+.curve-labels {
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.user-marker {
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--danger);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  box-shadow: 0 0 10px var(--danger);
+}
+
+.curve-description {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* 隐藏类 */
+.hidden {
+  display: none !important;
+}
