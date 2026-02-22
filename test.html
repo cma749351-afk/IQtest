@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>IQ 测试 - 进行中</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 测试页面 -->
+    <div id="test-panel">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">IQ CHALLENGE</p>
+          <h1>30 题传统解谜测试</h1>
+          <p>每题 5 个选项，不含数学与分类题，完成后立即显示你的 IQ 估值。</p>
+        </div>
+        <div class="timer-chip" id="timer">40:00</div>
+      </header>
+
+      <div class="status-row">
+        <div id="progress">第 1 / 30 题</div>
+        <div id="score">答对 0 题</div>
+      </div>
+
+      <div class="card" id="question-card">
+        <p id="question-text">载入题目...</p>
+        <div id="options" class="options-grid"></div>
+      </div>
+
+      <div class="navigation-buttons">
+        <button id="prev-button" class="secondary" disabled>上一题</button>
+        <button id="next-button" class="primary" disabled>下一题</button>
+      </div>
+    </div>
+
+    <!-- 支付验证页面（初始隐藏） -->
+    <div id="payment-panel" class="payment-panel hidden">
+      <div class="payment-content">
+        <h2>验证查看结果</h2>
+        <div class="payment-info">
+          <div class="payment-icon">🔒</div>
+          <p class="payment-text">你的 IQ 测试已完成！输入测试验证码即可免费查看完整结果与分析。</p>
+          <div class="payment-features">
+            <div class="payment-feature">✅ 详细 IQ 估值与百分比排名</div>
+            <div class="payment-feature">✅ 钟形曲线可视化分析</div>
+            <div class="payment-feature">✅ 与全球人口比较数据</div>
+          </div>
+        </div>
+        
+        <div class="payment-options">
+          <div class="payment-option">
+            <div class="option-title">免费查看结果</div>
+            <div class="option-description">输入测试验证码可免费查看完整结果</div>
+            <div class="input-group">
+              <input type="text" id="access-code" placeholder="输入验证码" />
+              <button id="submit-code" class="secondary">验证</button>
+            </div>
+            <div class="hint">测试验证码: <code>Hi_NoahTsang</code></div>
+          </div>
+        </div>
+        
+        <div class="payment-note">
+          <p>这是一个演示页面。在实际部署中，这里可以集成支付网关。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="test-script.js"></script>
+  <script>
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      // 确保测试面板可见，支付面板隐藏
+      const testPanel = document.getElementById('test-panel');
+      const paymentPanel = document.getElementById('payment-panel');
+      
+      if (testPanel) testPanel.classList.remove('hidden');
+      if (paymentPanel) paymentPanel.classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

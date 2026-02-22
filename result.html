@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>IQ 测试 - 结果</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 结果页面 -->
+    <div class="result-panel">
+      <h2>测验完成 🎉</h2>
+      <div id="result-stats">
+        <div class="stat">
+          <div class="stat-value" id="correct-count">0</div>
+          <div class="stat-label">答对题数</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="iq-score">100</div>
+          <div class="stat-label">估计 IQ</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="percentile">50%</div>
+          <div class="stat-label">百分比排名</div>
+        </div>
+      </div>
+
+      <div class="bell-curve-container">
+        <h3>IQ 分布钟形曲线</h3>
+        <div class="bell-curve">
+          <div class="curve"></div>
+          <div class="curve-labels">
+            <span>55</span>
+            <span>70</span>
+            <span>85</span>
+            <span>100</span>
+            <span>115</span>
+            <span>130</span>
+            <span>145</span>
+          </div>
+          <div id="user-marker" class="user-marker"></div>
+        </div>
+        <p class="curve-description">低於 <span id="higher-than">99.6%</span> 的人，位於全球人的 <span id="percentile-text">0.4%</span> 的位置。</p>
+        <div id="iq-category" class="iq-category">
+          <div class="category-label">IQ 分类</div>
+          <div id="category-value" class="category-value">中等</div>
+        </div>
+      </div>
+
+      <button id="restart-button" class="secondary">重新开始</button>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="result-script.js"></script>
+  <script>
+    // 页面初始化：从URL参数加载结果数据
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const correctCount = parseInt(urlParams.get('correct') || '0');
+      const totalQuestions = parseInt(urlParams.get('total') || '30');
+      
+      // 更新显示
+      const correctCountElement = document.getElementById('correct-count');
+      if (correctCountElement) {
+        correctCountElement.textContent = correctCount;
+      }
+      
+      // 这里可以调用result-script.js中的函数来计算和显示IQ结果
+      if (window.loadResultData) {
+        window.loadResultData(correctCount, totalQuestions);
+      }
+      
+      // 重新开始按钮
+      const restartButton = document.getElementById('restart-button');
+      if (restartButton) {
+        restartButton.addEventListener('click', () => {
+          window.location.href = 'index.html';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
