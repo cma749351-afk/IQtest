@@ -34,16 +34,13 @@ const questionBank = [
 ];
 
 const TOTAL_QUESTIONS = 30;
-const TIMER_DURATION = 15 * 60; // 15 minutes total
-const QUESTION_TIME = 30; // 30 seconds per question
+const TIMER_DURATION = 40 * 60; // 40 minutes total
 
 let currentIndex = 0;
 let correctCount = 0;
 let selectedOption = null;
 let timer = TIMER_DURATION;
 let timerInterval = null;
-let questionTimer = QUESTION_TIME;
-let questionTimerInterval = null;
 
 // DOM 元素
 const introPanel = document.getElementById('intro-panel');
@@ -55,7 +52,6 @@ const optionsContainer = document.getElementById('options');
 const progressLabel = document.getElementById('progress');
 const scoreLabel = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
-const questionTimerDisplay = document.getElementById('question-timer');
 const nextButton = document.getElementById('next-button');
 const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
@@ -85,14 +81,17 @@ function calculateIQStats(correct, total) {
   // 限制 IQ 范围在 55-145 之间（3个标准差）
   const clampedIQ = Math.max(55, Math.min(145, Math.round(iq)));
   
-  // 计算百分比排名
+  // 计算百分比排名：低於你的百分比
   const percentile = normCDF(z) * 100;
   const clampedPercentile = Math.max(0.1, Math.min(99.9, percentile));
   
+  // 你超过了多少百分比的人
+  const exceedsPercent = (100 - clampedPercentile).toFixed(1);
+  
   return {
     iq: clampedIQ,
-    percentile: clampedPercentile,
-    higherThan: (100 - clampedPercentile).toFixed(1)
+    percentile: clampedPercentile.toFixed(1), // 百分位數（低於你的百分比）
+    exceedsPercent: exceedsPercent // 超过了多少百分比的人
   };
 }
 
@@ -111,9 +110,9 @@ function showResultPanel() {
   
   correctCountElement.textContent = correctCount;
   iqScoreElement.textContent = stats.iq;
-  percentileElement.textContent = stats.percentile.toFixed(1) + '%';
-  percentileTextElement.textContent = stats.percentile.toFixed(1) + '%';
-  higherThanElement.textContent = stats.higherThan + '%';
+  percentileElement.textContent = stats.percentile + '%';
+  percentileTextElement.textContent = stats.percentile + '%';
+  higherThanElement.textContent = stats.exceedsPercent + '%';
   
   updateBellCurve(stats.iq);
   
@@ -149,29 +148,10 @@ function startTimer() {
   }, 1000);
 }
 
-function startQuestionTimer() {
-  questionTimer = QUESTION_TIME;
-  updateQuestionTimer();
-  clearInterval(questionTimerInterval);
-  questionTimerInterval = setInterval(() => {
-    questionTimer -= 1;
-    updateQuestionTimer();
-    if (questionTimer <= 0) {
-      clearInterval(questionTimerInterval);
-      nextQuestion();
-    }
-  }, 1000);
-}
-
 function updateTimerDisplay() {
   const minutes = String(Math.floor(timer / 60)).padStart(2, '0');
   const seconds = String(timer % 60).padStart(2, '0');
   timerDisplay.textContent = `${minutes}:${seconds}`;
-}
-
-function updateQuestionTimer() {
-  const seconds = String(questionTimer).padStart(2, '0');
-  questionTimerDisplay.textContent = `${seconds}s`;
 }
 
 // 加载题目
@@ -186,7 +166,6 @@ function loadQuestion() {
   optionsContainer.innerHTML = '';
   selectedOption = null;
   nextButton.disabled = true;
-  startQuestionTimer();
 
   question.options.forEach((option, idx) => {
     const button = document.createElement('button');
@@ -210,7 +189,6 @@ function selectOption(button, idx) {
 
 function nextQuestion() {
   if (selectedOption === null) return;
-  clearInterval(questionTimerInterval);
   const question = questionBank[currentIndex];
   if (selectedOption === question.answer) {
     correctCount += 1;
@@ -221,7 +199,6 @@ function nextQuestion() {
 
 function finishTest() {
   clearInterval(timerInterval);
-  clearInterval(questionTimerInterval);
   showResultPanel();
 }
 
