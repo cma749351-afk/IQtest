@@ -30,7 +30,28 @@ const questionBank = [
   { prompt: '多边形的内角和公式是 (n-2)×180°，当 n=8 时，和是多少？', options: ['1080°', '1260°', '1440°', '1620°', '1800°'], answer: 1 },
   { prompt: '如果光线在镜子里反射，入射角等于？', options: ['传播角', '反射角', '偏转角', '夹角 90°', '无法确定'], answer: 1 },
   { prompt: '将 100 分为 4 个相等部分，每部分是多少？', options: ['25', '20', '30', '15', '10'], answer: 0 },
-  { prompt: '在下面五个词中，哪一个与其他不同：蓝色、绿色、黄色、汽车、红色？', options: ['蓝色', '绿色', '黄色', '汽车', '红色'], answer: 3 }
+  { prompt: '在下面五个词中，哪一个与其他不同：蓝色、绿色、黄色、汽车、红色？', options: ['蓝色', '绿色', '黄色', '汽车', '红色'], answer: 3 },
+  // 新增更难的谜题（20题）
+  { prompt: '一个密码锁有三位数，每位可以是0-9。已知：1) 682 中一个数字正确且位置正确；2) 614 中一个数字正确但位置错误；3) 206 中两个数字正确但位置都错误；4) 738 中没有数字正确；5) 870 中一个数字正确但位置错误。密码是多少？', options: ['042', '062', '052', '082', '012'], answer: 0 },
+  { prompt: '五个盒子分别标有“苹果”“橘子”“苹果和橘子”“非苹果非橘子”“随机”。所有标签都是错的。你最少需要从几个盒子中取水果才能确定所有盒子的内容？', options: ['1', '2', '3', '4', '5'], answer: 1 },
+  { prompt: '一个正方形被分成四个小正方形，左上角写A，右上角写B，左下角写C，右下角写D。如果沿对角线对折（A与D重合，B与C重合），展开后哪两个字母会重叠？', options: ['A和D', 'B和C', 'A和C', 'B和D', '无重叠'], answer: 3 },
+  { prompt: '数列：1, 11, 21, 1211, 111221, 312211, ? 下一个数是多少？', options: ['13112221', '1113213211', '31131211131221', '132112213221', '以上都不是'], answer: 0 },
+  { prompt: '有三个开关对应三盏灯（在另一个房间）。你只能进房间一次。如何确定哪个开关控制哪盏灯？', options: ['打开第一个开关5分钟，关闭，打开第二个，进房间', '打开两个开关，进房间', '打开一个开关长时间，关闭，立即打开另一个，进房间', '无法确定', '打开所有开关，进房间'], answer: 0 },
+  { prompt: '一个天平有12个外观相同的球，其中一个重量不同（不知轻重）。最少称几次能找出该球并确定轻重？', options: ['2', '3', '4', '5', '6'], answer: 1 },
+  { prompt: '5个人过桥，分别需要1、2、5、10、15分钟。桥每次最多两人，必须有手电筒（只有一个）。所有人过桥最少需要几分钟？', options: ['29', '32', '34', '37', '40'], answer: 0 },
+  { prompt: '一个数字，加上它自己，加上它的一半，加上它的四分之一，再加1等于100。这个数字是多少？', options: ['36', '44', '28', '52', '60'], answer: 0 },
+  { prompt: '时钟的时针和分针在3点后第一次重合是几点几分？', options: ['3:16:21.82', '3:15:00', '3:16:00', '3:17:00', '3:18:00'], answer: 0 },
+  { prompt: '一个三位数，各位数字立方和等于它本身。这个数是多少？', options: ['153', '370', '371', '407', '以上都是'], answer: 4 },
+  { prompt: '你面前有三扇门，一扇后有汽车，两扇后有山羊。你选了一扇，主持人打开另一扇有山羊的门。你是否该换选择？', options: ['换，概率变为2/3', '不换，概率1/2', '换不换都一样', '无法确定', '看主持人意图'], answer: 0 },
+  { prompt: '一个正方形内切于一个圆，圆内切于一个更大的正方形。大正方形面积是小正方形的几倍？', options: ['2', '√2', '2√2', '4', 'π'], answer: 0 },
+  { prompt: '两个人轮流从一堆硬币中取1-5枚，取最后一枚者胜。初始有100枚，你先手。如何保证必胜？', options: ['第一次取4枚', '第一次取2枚', '第一次取1枚', '第一次取3枚', '无法保证'], answer: 0 },
+  { prompt: '一个数列：2, 3, 5, 9, 17, ? 下一个数是多少？', options: ['31', '33', '35', '37', '39'], answer: 1 },
+  { prompt: '五个海盗分100枚金币，由最年长提出方案，所有人投票。如果半数或以上同意则通过，否则提出者被扔下海，由下一个年长者继续。海盗都极其聪明且贪婪。最年长者最多能保住多少金币？', options: ['98', '97', '96', '95', '94'], answer: 1 },
+  { prompt: '一个数字，反转后比原数大27。这个数字可能是？', options: ['14', '25', '36', '47', '58'], answer: 2 },
+  { prompt: '一个房间里有三个灯泡，分别由三个开关控制（在房间外）。你只能进房间一次。如何确定哪个开关控制哪个灯泡？', options: ['打开一个开关长时间，关闭，立即打开另一个，进房间', '打开两个开关，进房间', '打开所有开关，进房间', '无法确定', '打开一个开关5分钟，关闭，打开第二个，进房间'], answer: 0 },
+  { prompt: '一个数字，它的二进制表示中1的个数是质数，且它本身是质数。以下哪个数满足？', options: ['7', '11', '13', '17', '19'], answer: 0 },
+  { prompt: '一个等腰三角形，底边10，腰13。求面积。', options: ['60', '65', '70', '75', '80'], answer: 0 },
+  { prompt: '一个数列：1, 2, 6, 24, 120, ? 下一个数是多少？', options: ['720', '840', '960', '1080', '1200'], answer: 0 }
 ];
 
 const TOTAL_QUESTIONS = 30;
@@ -41,6 +62,7 @@ let correctCount = 0;
 let selectedOption = null;
 let timer = TIMER_DURATION;
 let timerInterval = null;
+let currentTestQuestions = []; // 当前测试的随机题目
 
 // DOM 元素
 const introPanel = document.getElementById('intro-panel');
@@ -129,6 +151,16 @@ function startTest() {
   correctCount = 0;
   selectedOption = null;
   
+  // 从题库中随机选择 TOTAL_QUESTIONS 道题并打乱顺序
+  currentTestQuestions = [...questionBank];
+  // Fisher-Yates 洗牌算法
+  for (let i = currentTestQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentTestQuestions[i], currentTestQuestions[j]] = [currentTestQuestions[j], currentTestQuestions[i]];
+  }
+  // 只取前 TOTAL_QUESTIONS 题
+  currentTestQuestions = currentTestQuestions.slice(0, TOTAL_QUESTIONS);
+  
   startTimer();
   loadQuestion();
 }
@@ -156,12 +188,12 @@ function updateTimerDisplay() {
 
 // 加载题目
 function loadQuestion() {
-  if (currentIndex >= TOTAL_QUESTIONS || currentIndex >= questionBank.length) {
+  if (currentIndex >= currentTestQuestions.length) {
     finishTest();
     return;
   }
 
-  const question = questionBank[currentIndex];
+  const question = currentTestQuestions[currentIndex];
   questionText.textContent = question.prompt;
   optionsContainer.innerHTML = '';
   selectedOption = null;
@@ -175,7 +207,7 @@ function loadQuestion() {
     optionsContainer.appendChild(button);
   });
 
-  progressLabel.textContent = `第 ${currentIndex + 1} / ${TOTAL_QUESTIONS} 题`;
+  progressLabel.textContent = `第 ${currentIndex + 1} / ${currentTestQuestions.length} 题`;
   scoreLabel.textContent = `答对 ${correctCount} 题`;
 }
 
@@ -189,7 +221,7 @@ function selectOption(button, idx) {
 
 function nextQuestion() {
   if (selectedOption === null) return;
-  const question = questionBank[currentIndex];
+  const question = currentTestQuestions[currentIndex];
   if (selectedOption === question.answer) {
     correctCount += 1;
   }
