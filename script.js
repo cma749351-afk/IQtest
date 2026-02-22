@@ -68,6 +68,7 @@ let currentTestQuestions = []; // 当前测试的随机题目
 const introPanel = document.getElementById('intro-panel');
 const testPanel = document.getElementById('test-panel');
 const resultPanel = document.getElementById('result-panel');
+const paymentPanel = document.getElementById('payment-panel');
 const startButton = document.getElementById('start-button');
 const questionText = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options');
@@ -77,6 +78,8 @@ const timerDisplay = document.getElementById('timer');
 const nextButton = document.getElementById('next-button');
 const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
+const accessCodeInput = document.getElementById('access-code');
+const submitCodeButton = document.getElementById('submit-code');
 const iqScoreElement = document.getElementById('iq-score');
 const percentileElement = document.getElementById('percentile');
 const percentileTextElement = document.getElementById('percentile-text');
@@ -126,19 +129,43 @@ function updateBellCurve(iq) {
   userMarker.style.left = `${percentage}%`;
 }
 
-// 显示结果页面
-function showResultPanel() {
-  const stats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
-  
-  correctCountElement.textContent = correctCount;
-  iqScoreElement.textContent = stats.iq;
-  percentileElement.textContent = stats.percentile + '%';
-  percentileTextElement.textContent = stats.percentile + '%';
-  higherThanElement.textContent = stats.exceedsPercent + '%';
-  
-  updateBellCurve(stats.iq);
+// 存储测试结果数据
+let testStats = null;
+
+// 显示支付验证页面
+function showPaymentPanel() {
+  testStats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
   
   testPanel.classList.add('hidden');
+  paymentPanel.classList.remove('hidden');
+  
+  // 清空输入框
+  if (accessCodeInput) {
+    accessCodeInput.value = '';
+  }
+}
+
+// 显示结果页面（在支付验证后调用）
+function showResultPanel() {
+  if (!testStats) {
+    testStats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
+  }
+  
+  // 根据用户要求：使用 1 - percentile 逻辑
+  // testStats.percentile 是低于你的百分比（如 0.4%）
+  // testStats.exceedsPercent 是高于你的百分比（如 99.6%）
+  // 用户想要显示高于的百分比
+  const displayPercentile = testStats.exceedsPercent; // 直接使用 exceedsPercent (99.6%)
+  
+  correctCountElement.textContent = correctCount;
+  iqScoreElement.textContent = testStats.iq;
+  percentileElement.textContent = displayPercentile + '%';
+  percentileTextElement.textContent = displayPercentile + '%';
+  higherThanElement.textContent = testStats.exceedsPercent + '%';
+  
+  updateBellCurve(testStats.iq);
+  
+  paymentPanel.classList.add('hidden');
   resultPanel.classList.remove('hidden');
 }
 
@@ -231,16 +258,32 @@ function nextQuestion() {
 
 function finishTest() {
   clearInterval(timerInterval);
-  showResultPanel();
+  showPaymentPanel();
 }
 
 function restartTest() {
   currentIndex = 0;
   correctCount = 0;
   selectedOption = null;
+  testStats = null;
   
   resultPanel.classList.add('hidden');
+  paymentPanel.classList.add('hidden');
   introPanel.classList.remove('hidden');
+}
+
+// 支付验证函数
+function verifyAccessCode() {
+  const code = accessCodeInput.value.trim();
+  if (code === 'Hi_NoahTsang') {
+    showResultPanel();
+    return true;
+  } else {
+    alert('验证码错误，请重试。测试验证码: Hi_NoahTsang');
+    accessCodeInput.focus();
+    accessCodeInput.select();
+    return false;
+  }
 }
 
 // 事件监听
@@ -248,7 +291,18 @@ startButton.addEventListener('click', startTest);
 nextButton.addEventListener('click', nextQuestion);
 restartButton.addEventListener('click', restartTest);
 
+// 支付验证事件
+if (submitCodeButton && accessCodeInput) {
+  submitCodeButton.addEventListener('click', verifyAccessCode);
+  accessCodeInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      verifyAccessCode();
+    }
+  });
+}
+
 // 初始化：显示介绍页面
 introPanel.classList.remove('hidden');
 testPanel.classList.add('hidden');
 resultPanel.classList.add('hidden');
+paymentPanel.classList.add('hidden');
