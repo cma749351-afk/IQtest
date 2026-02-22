@@ -66,7 +66,6 @@ const progressLabel = document.getElementById('progress');
 const scoreLabel = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const prevButton = document.getElementById('prev-button');
-const undoButton = document.getElementById('undo-button');
 const nextButton = document.getElementById('next-button');
 const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
@@ -255,7 +254,6 @@ function loadQuestion() {
   optionsContainer.innerHTML = '';
   selectedOption = null;
   nextButton.disabled = true;
-  undoButton.disabled = true;
 
   // 检查是否有历史记录
   const history = answerHistory[currentIndex];
@@ -282,21 +280,25 @@ function loadQuestion() {
 }
 
 function selectOption(button, idx) {
-  if (selectedOption !== null) return;
-  selectedOption = idx;
-  document.querySelectorAll('.option-btn').forEach((btn) => btn.classList.remove('active'));
-  button.classList.add('active');
-  nextButton.disabled = false;
-  undoButton.disabled = false;
+  // 直接切换选择：如果已经选择了当前选项，则取消选择；否则选择新选项
+  if (selectedOption === idx) {
+    // 取消选择当前选项
+    selectedOption = null;
+    button.classList.remove('active');
+  } else {
+    // 选择新选项
+    selectedOption = idx;
+    document.querySelectorAll('.option-btn').forEach((btn) => btn.classList.remove('active'));
+    button.classList.add('active');
+  }
+  
+  nextButton.disabled = selectedOption === null;
 }
 
 // 更新按钮状态
 function updateButtonStates() {
   // 上一题按钮：只有在不是第一题且有历史记录时才可用
   prevButton.disabled = currentIndex === 0;
-  
-  // 撤销选择按钮：只有在当前题目有选择时才可用
-  undoButton.disabled = selectedOption === null;
   
   // 下一题按钮：只有在当前题目有选择时才可用
   nextButton.disabled = selectedOption === null;
@@ -328,18 +330,6 @@ function finishTest() {
 }
 
 // 撤销当前选择
-function undoSelection() {
-  if (selectedOption === null) return;
-  
-  // 重置选择状态
-  selectedOption = null;
-  document.querySelectorAll('.option-btn').forEach((btn) => btn.classList.remove('active'));
-  
-  // 更新按钮状态
-  nextButton.disabled = true;
-  undoButton.disabled = true;
-}
-
 // 返回上一题
 function prevQuestion() {
   if (currentIndex === 0) return; // 已经是第一题
@@ -405,7 +395,6 @@ function verifyAccessCode() {
 // 事件监听
 startButton.addEventListener('click', startTest);
 prevButton.addEventListener('click', prevQuestion);
-undoButton.addEventListener('click', undoSelection);
 nextButton.addEventListener('click', nextQuestion);
 restartButton.addEventListener('click', restartTest);
 
