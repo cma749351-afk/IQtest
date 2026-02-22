@@ -341,7 +341,7 @@ function nextQuestion() {
 
 function finishTest() {
   clearInterval(timerInterval);
-  showResultPanel(); // 直接显示结果，跳过支付验证页面
+  showPaymentPanel(); // 显示支付验证页面
 }
 
 // 撤销当前选择
