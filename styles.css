@@ -569,6 +569,19 @@ button.secondary {
   color: var(--accent);
 }
 
+/* 导航按钮样式 */
+.navigation-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.navigation-buttons button {
+  min-width: 120px;
+}
+
 /* 隐藏类 */
 .hidden {
   display: none !important;

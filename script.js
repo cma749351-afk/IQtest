@@ -55,6 +55,8 @@ let selectedOption = null;
 let timer = TIMER_DURATION;
 let timerInterval = null;
 let currentTestQuestions = []; // 当前测试的随机题目
+let answerHistory = []; // 记录每题的答案选择和是否正确
+let canGoBack = false; // 是否可以返回上一题
 
 // DOM 元素
 const introPanel = document.getElementById('intro-panel');
@@ -67,6 +69,8 @@ const optionsContainer = document.getElementById('options');
 const progressLabel = document.getElementById('progress');
 const scoreLabel = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
+const prevButton = document.getElementById('prev-button');
+const undoButton = document.getElementById('undo-button');
 const nextButton = document.getElementById('next-button');
 const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
@@ -189,6 +193,8 @@ function startTest() {
   currentIndex = 0;
   correctCount = 0;
   selectedOption = null;
+  answerHistory = [];
+  canGoBack = false;
   
   // 按难度分级排序（从简单到困难）
   // 首先按难度分组
@@ -253,17 +259,30 @@ function loadQuestion() {
   optionsContainer.innerHTML = '';
   selectedOption = null;
   nextButton.disabled = true;
+  undoButton.disabled = true;
+
+  // 检查是否有历史记录
+  const history = answerHistory[currentIndex];
+  if (history) {
+    selectedOption = history.selected;
+  }
 
   question.options.forEach((option, idx) => {
     const button = document.createElement('button');
     button.className = 'option-btn';
     button.textContent = option;
+    if (selectedOption === idx) {
+      button.classList.add('active');
+    }
     button.addEventListener('click', () => selectOption(button, idx));
     optionsContainer.appendChild(button);
   });
 
   progressLabel.textContent = `第 ${currentIndex + 1} / ${currentTestQuestions.length} 题`;
   scoreLabel.textContent = `答对 ${correctCount} 题`;
+  
+  // 更新按钮状态
+  updateButtonStates();
 }
 
 function selectOption(button, idx) {
@@ -272,15 +291,38 @@ function selectOption(button, idx) {
   document.querySelectorAll('.option-btn').forEach((btn) => btn.classList.remove('active'));
   button.classList.add('active');
   nextButton.disabled = false;
+  undoButton.disabled = false;
+}
+
+// 更新按钮状态
+function updateButtonStates() {
+  // 上一题按钮：只有在不是第一题且有历史记录时才可用
+  prevButton.disabled = currentIndex === 0;
+  
+  // 撤销选择按钮：只有在当前题目有选择时才可用
+  undoButton.disabled = selectedOption === null;
+  
+  // 下一题按钮：只有在当前题目有选择时才可用
+  nextButton.disabled = selectedOption === null;
 }
 
 function nextQuestion() {
   if (selectedOption === null) return;
   const question = currentTestQuestions[currentIndex];
-  if (selectedOption === question.answer) {
+  const wasCorrect = selectedOption === question.answer;
+  
+  // 保存当前题目的历史记录
+  answerHistory[currentIndex] = {
+    selected: selectedOption,
+    correct: wasCorrect
+  };
+  
+  if (wasCorrect) {
     correctCount += 1;
   }
+  
   currentIndex += 1;
+  canGoBack = true; // 允许返回上一题
   loadQuestion();
 }
 
@@ -289,11 +331,56 @@ function finishTest() {
   showPaymentPanel();
 }
 
+// 撤销当前选择
+function undoSelection() {
+  if (selectedOption === null) return;
+  
+  // 重置选择状态
+  selectedOption = null;
+  document.querySelectorAll('.option-btn').forEach((btn) => btn.classList.remove('active'));
+  
+  // 更新按钮状态
+  nextButton.disabled = true;
+  undoButton.disabled = true;
+}
+
+// 返回上一题
+function prevQuestion() {
+  if (currentIndex === 0) return; // 已经是第一题
+  
+  // 减少索引
+  currentIndex -= 1;
+  
+  // 获取上一题的历史记录
+  const history = answerHistory[currentIndex];
+  if (history) {
+    selectedOption = history.selected;
+    
+    // 更新正确答案计数（需要重新计算，因为可能修改了选择）
+    // 先重置当前题目的正确计数
+    const wasCorrect = history.correct;
+    if (wasCorrect && selectedOption !== currentTestQuestions[currentIndex].answer) {
+      // 如果之前是正确的，但现在选择了不同答案，需要减1
+      correctCount -= 1;
+    } else if (!wasCorrect && selectedOption === currentTestQuestions[currentIndex].answer) {
+      // 如果之前是错误的，但现在选择了正确答案，需要加1
+      correctCount += 1;
+    }
+  } else {
+    selectedOption = null;
+  }
+  
+  // 加载题目
+  loadQuestion();
+}
+
 function restartTest() {
   currentIndex = 0;
   correctCount = 0;
   selectedOption = null;
   testStats = null;
+  answerHistory = [];
+  canGoBack = false;
   
   resultPanel.classList.add('hidden');
   paymentPanel.classList.add('hidden');
@@ -321,6 +408,8 @@ function verifyAccessCode() {
 
 // 事件监听
 startButton.addEventListener('click', startTest);
+prevButton.addEventListener('click', prevQuestion);
+undoButton.addEventListener('click', undoSelection);
 nextButton.addEventListener('click', nextQuestion);
 restartButton.addEventListener('click', restartTest);
 
