@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mensa 风格 IQ 挑战</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">IQ CHALLENGE</p>
+        <h1>30 题 Mensa 风格测试</h1>
+        <p>每题 5 个选项，完成后立即显示你的 IQ 估值。</p>
+      </div>
+      <div class="timer-chip" id="timer">15:00</div>
+    </header>
+
+    <div class="status-row">
+      <div id="progress">第 1 / 30 题</div>
+      <div id="score">答对 0 题</div>
+    </div>
+
+    <div class="card" id="question-card">
+      <div class="question-top">
+        <p id="question-text">载入题目...</p>
+        <div class="question-timer-chip" id="question-timer">30s</div>
+      </div>
+      <div id="options" class="options-grid"></div>
+    </div>
+
+    <button id="next-button" class="primary" disabled>下一题</button>
+
+    <div id="result-panel" class="result-panel hidden">
+      <h2>测验完成 🎉</h2>
+      <p id="result-text"></p>
+      <button id="restart-button" class="secondary">重新开始</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

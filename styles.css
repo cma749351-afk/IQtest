@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg: #090c12;
+  --card: #10151f;
+  --text: #f8fbff;
+  --muted: #7a8499;
+  --accent: #5be5c5;
+  --accent-strong: #20a68c;
+  --danger: #ff6b6b;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, rgba(91, 229, 197, 0.25), transparent 45%), var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.app-shell {
+  width: min(960px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero {
+  background: linear-gradient(135deg, rgba(13, 196, 147, 0.2), rgba(13, 149, 215, 0.25));
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 2.6vw, 2.5rem);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.timer-chip {
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: rgba(13, 196, 147, 0.15);
+  font-weight: 600;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.card {
+  background: var(--card);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.options-grid {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.option-btn {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border 0.2s, transform 0.2s, background 0.2s;
+}
+
+.question-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.question-timer-chip {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.option-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.option-btn.active {
+  background: rgba(91, 229, 197, 0.12);
+  border-color: var(--accent);
+}
+
+.option-btn.correct {
+  background: rgba(91, 229, 197, 0.25);
+  border-color: rgba(91, 229, 197, 0.9);
+}
+
+.option-btn.wrong {
+  background: rgba(255, 107, 107, 0.15);
+  border-color: rgba(255, 107, 107, 0.7);
+}
+
+button.primary,
+button.secondary {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #051114;
+}
+
+button.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.result-panel {
+  background: rgba(13, 20, 34, 0.9);
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+.result-panel.hidden {
+  display: none;
+}
+
+.result-panel h2 {
+  margin-top: 0;
+  font-size: 2rem;
+}
+
+.result-panel p {
+  font-size: 1.1rem;
+}
+
+@media (min-width: 600px) {
+  .options-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .options-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
