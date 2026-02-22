@@ -80,7 +80,6 @@ const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
 const accessCodeInput = document.getElementById('access-code');
 const submitCodeButton = document.getElementById('submit-code');
-const simulateAlipayButton = document.getElementById('simulate-alipay');
 const iqScoreElement = document.getElementById('iq-score');
 const percentileElement = document.getElementById('percentile');
 const percentileTextElement = document.getElementById('percentile-text');
@@ -413,26 +412,6 @@ prevButton.addEventListener('click', prevQuestion);
 nextButton.addEventListener('click', nextQuestion);
 restartButton.addEventListener('click', restartTest);
 
-// 支付宝模拟支付
-function simulateAlipayPayment() {
-  // 显示支付中状态
-  const alipayButton = simulateAlipayButton;
-  if (alipayButton) {
-    const originalText = alipayButton.textContent;
-    alipayButton.textContent = '支付中...';
-    alipayButton.disabled = true;
-    
-    // 模拟支付处理时间
-    setTimeout(() => {
-      // 支付成功，显示结果
-      alipayButton.textContent = '支付成功！跳转中...';
-      setTimeout(() => {
-        showResultPanel();
-      }, 1000);
-    }, 1500);
-  }
-}
-
 // 支付验证事件
 if (submitCodeButton && accessCodeInput) {
   submitCodeButton.addEventListener('click', verifyAccessCode);
@@ -441,11 +420,6 @@ if (submitCodeButton && accessCodeInput) {
       verifyAccessCode();
     }
   });
-}
-
-// 支付宝支付事件
-if (simulateAlipayButton) {
-  simulateAlipayButton.addEventListener('click', simulateAlipayPayment);
 }
 
 // 初始化：显示介绍页面

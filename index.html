@@ -65,10 +65,10 @@
     <!-- 支付验证页面（初始隐藏） -->
     <div id="payment-panel" class="payment-panel hidden">
       <div class="payment-content">
-        <h2>解锁完整结果</h2>
+        <h2>验证查看结果</h2>
         <div class="payment-info">
           <div class="payment-icon">🔒</div>
-          <p class="payment-text">你的 IQ 测试已完成！要查看详细结果、百分比排名与钟形曲线分析，请完成验证。</p>
+          <p class="payment-text">你的 IQ 测试已完成！输入测试验证码即可免费查看完整结果与分析。</p>
           <div class="payment-features">
             <div class="payment-feature">✅ 详细 IQ 估值与百分比排名</div>
             <div class="payment-feature">✅ 钟形曲线可视化分析</div>
@@ -78,41 +78,13 @@
         
         <div class="payment-options">
           <div class="payment-option">
-            <div class="option-title">测试验证码</div>
-            <div class="option-description">输入测试验证码可免费查看结果</div>
+            <div class="option-title">免费查看结果</div>
+            <div class="option-description">输入测试验证码可免费查看完整结果</div>
             <div class="input-group">
               <input type="text" id="access-code" placeholder="输入验证码" />
               <button id="submit-code" class="secondary">验证</button>
             </div>
             <div class="hint">测试验证码: <code>Hi_NoahTsang</code></div>
-          </div>
-          
-          <div class="payment-divider">
-            <span>或</span>
-          </div>
-          
-          <div class="payment-option">
-            <div class="option-title">支付宝支付</div>
-            <div class="option-description">支付 ¥9.99 解锁完整结果（演示版本）</div>
-            <div class="alipay-qr-container">
-              <div class="alipay-qr">
-                <!-- 支付宝二维码示例 -->
-                <div class="qr-placeholder">
-                  <div class="qr-icon">💰</div>
-                  <div class="qr-text">支付宝二维码</div>
-                </div>
-              </div>
-              <div class="alipay-instructions">
-                <p>1. 打开支付宝APP</p>
-                <p>2. 扫描上方二维码</p>
-                <p>3. 支付 ¥9.99</p>
-                <p>4. 支付成功后自动跳转</p>
-              </div>
-            </div>
-            <div class="alipay-actions">
-              <button id="simulate-alipay" class="primary">模拟支付宝支付成功</button>
-              <p class="alipay-note">这是一个演示页面。在实际部署中，这里会集成真实的支付宝支付接口。</p>
-            </div>
           </div>
         </div>
         
