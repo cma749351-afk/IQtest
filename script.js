@@ -86,6 +86,7 @@ const percentileElement = document.getElementById('percentile');
 const percentileTextElement = document.getElementById('percentile-text');
 const higherThanElement = document.getElementById('higher-than');
 const userMarker = document.getElementById('user-marker');
+const categoryValueElement = document.getElementById('category-value');
 
 // 标准正态分布 CDF 近似（来自 Abramowitz and Stegun）
 function normCDF(x) {
@@ -130,6 +131,15 @@ function updateBellCurve(iq) {
   userMarker.style.left = `${percentage}%`;
 }
 
+// 获取 IQ 分类
+function getIQCategory(iq) {
+  if (iq >= 145) return '神';
+  if (iq >= 130) return '天才';
+  if (iq >= 110) return '高';
+  if (iq >= 90) return '中';
+  return '低';
+}
+
 // 存储测试结果数据
 let testStats = null;
 
@@ -160,13 +170,18 @@ function showResultPanel() {
   percentileElement.textContent = testStats.exceedsPercent + '%';
   
   // 曲线描述中的两个值：
-  // - "高于 X% 的人"：显示高于的百分比
-  // - "位于全球人口的 Y% 位置"：显示低于的百分比
+  // - "低於 X% 的人"：显示高于的百分比（exceedsPercent）
+  // - "位於全球人的 Y% 的位置"：显示低于的百分比（percentile）
   higherThanElement.textContent = testStats.exceedsPercent + '%';
   percentileTextElement.textContent = testStats.percentile + '%';
   
   correctCountElement.textContent = correctCount;
   iqScoreElement.textContent = testStats.iq;
+  
+  // 更新 IQ 分类
+  if (categoryValueElement) {
+    categoryValueElement.textContent = getIQCategory(testStats.iq);
+  }
   
   updateBellCurve(testStats.iq);
   
@@ -275,6 +290,11 @@ function restartTest() {
   resultPanel.classList.add('hidden');
   paymentPanel.classList.add('hidden');
   introPanel.classList.remove('hidden');
+  
+  // 重置分类显示
+  if (categoryValueElement) {
+    categoryValueElement.textContent = '中';
+  }
 }
 
 // 支付验证函数

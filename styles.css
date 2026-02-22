@@ -548,6 +548,27 @@ button.secondary {
   line-height: 1.5;
 }
 
+/* IQ 分类样式 */
+.iq-category {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.category-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.category-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* 隐藏类 */
 .hidden {
   display: none !important;
