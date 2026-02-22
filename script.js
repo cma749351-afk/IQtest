@@ -80,6 +80,7 @@ const restartButton = document.getElementById('restart-button');
 const correctCountElement = document.getElementById('correct-count');
 const accessCodeInput = document.getElementById('access-code');
 const submitCodeButton = document.getElementById('submit-code');
+const simulateAlipayButton = document.getElementById('simulate-alipay');
 const iqScoreElement = document.getElementById('iq-score');
 const percentileElement = document.getElementById('percentile');
 const percentileTextElement = document.getElementById('percentile-text');
@@ -151,17 +152,21 @@ function showResultPanel() {
     testStats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
   }
   
-  // 根据用户要求：使用 1 - percentile 逻辑
+  // 根据用户要求：百分比排名使用 100% - 当前值（即显示高于的百分比）
   // testStats.percentile 是低于你的百分比（如 0.4%）
   // testStats.exceedsPercent 是高于你的百分比（如 99.6%）
-  // 用户想要显示高于的百分比
-  const displayPercentile = testStats.exceedsPercent; // 直接使用 exceedsPercent (99.6%)
+  
+  // 百分比排名：显示高于的百分比（你超过了多少百分比的人）
+  percentileElement.textContent = testStats.exceedsPercent + '%';
+  
+  // 曲线描述中的两个值：
+  // - "高于 X% 的人"：显示高于的百分比
+  // - "位于全球人口的 Y% 位置"：显示低于的百分比
+  higherThanElement.textContent = testStats.exceedsPercent + '%';
+  percentileTextElement.textContent = testStats.percentile + '%';
   
   correctCountElement.textContent = correctCount;
   iqScoreElement.textContent = testStats.iq;
-  percentileElement.textContent = displayPercentile + '%';
-  percentileTextElement.textContent = displayPercentile + '%';
-  higherThanElement.textContent = testStats.exceedsPercent + '%';
   
   updateBellCurve(testStats.iq);
   
@@ -291,6 +296,26 @@ startButton.addEventListener('click', startTest);
 nextButton.addEventListener('click', nextQuestion);
 restartButton.addEventListener('click', restartTest);
 
+// 支付宝模拟支付
+function simulateAlipayPayment() {
+  // 显示支付中状态
+  const alipayButton = simulateAlipayButton;
+  if (alipayButton) {
+    const originalText = alipayButton.textContent;
+    alipayButton.textContent = '支付中...';
+    alipayButton.disabled = true;
+    
+    // 模拟支付处理时间
+    setTimeout(() => {
+      // 支付成功，显示结果
+      alipayButton.textContent = '支付成功！跳转中...';
+      setTimeout(() => {
+        showResultPanel();
+      }, 1000);
+    }, 1500);
+  }
+}
+
 // 支付验证事件
 if (submitCodeButton && accessCodeInput) {
   submitCodeButton.addEventListener('click', verifyAccessCode);
@@ -299,6 +324,11 @@ if (submitCodeButton && accessCodeInput) {
       verifyAccessCode();
     }
   });
+}
+
+// 支付宝支付事件
+if (simulateAlipayButton) {
+  simulateAlipayButton.addEventListener('click', simulateAlipayPayment);
 }
 
 // 初始化：显示介绍页面

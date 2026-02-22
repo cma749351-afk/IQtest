@@ -461,6 +461,93 @@ button.secondary {
   line-height: 1.6;
 }
 
+/* 支付宝支付样式 */
+.payment-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: var(--muted);
+}
+
+.payment-divider::before,
+.payment-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.payment-divider span {
+  padding: 0 16px;
+  font-size: 0.9rem;
+}
+
+.alipay-qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 0 0 24px;
+}
+
+.alipay-qr {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, rgba(13, 149, 215, 0.1), rgba(91, 229, 197, 0.1));
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.qr-placeholder {
+  text-align: center;
+  color: var(--muted);
+}
+
+.qr-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.qr-text {
+  font-size: 1rem;
+}
+
+.alipay-instructions {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.alipay-instructions p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.alipay-instructions p:first-child {
+  margin-top: 0;
+}
+
+.alipay-instructions p:last-child {
+  margin-bottom: 0;
+}
+
+.alipay-actions {
+  text-align: center;
+}
+
+.alipay-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
 /* 隐藏类 */
 .hidden {
   display: none !important;
