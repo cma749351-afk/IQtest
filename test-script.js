@@ -3,6 +3,7 @@
 // 常量定义
 const TOTAL_QUESTIONS = 30;
 const TIMER_DURATION = 40 * 60; // 40 minutes total
+const STORAGE_KEY = 'iqTestProgress'; // localStorage 进度存储键
 
 // 状态变量
 let currentIndex = 0;
@@ -13,6 +14,7 @@ let timerInterval = null;
 let currentTestQuestions = []; // 当前测试的随机题目
 let answerHistory = []; // 记录每题的答案选择和是否正确
 let canGoBack = false; // 是否可以返回上一题
+let testSessionId = null; // 当前测试会话ID
 
 // DOM 元素
 const testPanel = document.getElementById('test-panel');
@@ -27,6 +29,74 @@ const nextButton = document.getElementById('next-button');
 const accessCodeInput = document.getElementById('access-code');
 const submitCodeButton = document.getElementById('submit-code');
 
+// 进度保存与恢复函数
+function saveProgress() {
+  if (!testSessionId) return; // 没有有效的会话ID时不保存
+  
+  const progress = {
+    sessionId: testSessionId,
+    timestamp: Date.now(),
+    currentIndex,
+    correctCount,
+    selectedOptions: [...selectedOptions],
+    timer,
+    currentTestQuestions: currentTestQuestions.map(q => ({
+      prompt: q.prompt,
+      options: [...q.options],
+      answer: q.answer,
+      difficulty: q.difficulty
+    })),
+    answerHistory: [...answerHistory],
+    canGoBack
+  };
+  
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    console.log('进度已保存');
+  } catch (e) {
+    console.error('保存进度失败:', e);
+  }
+}
+
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    
+    const progress = JSON.parse(saved);
+    
+    // 检查进度是否有效（有基本字段）
+    if (!progress.sessionId || !progress.currentTestQuestions || !progress.answerHistory) {
+      return null;
+    }
+    
+    // 检查进度是否过期（超过24小时）
+    const now = Date.now();
+    const hoursElapsed = (now - progress.timestamp) / (1000 * 60 * 60);
+    if (hoursElapsed > 24) {
+      clearProgress(); // 清除过期进度
+      return null;
+    }
+    
+    return progress;
+  } catch (e) {
+    console.error('加载进度失败:', e);
+    return null;
+  }
+}
+
+function clearProgress() {
+  localStorage.removeItem(STORAGE_KEY);
+  console.log('进度已清除');
+}
+
+// 自动保存进度（每次用户操作后）
+function autoSave() {
+  if (testSessionId) {
+    saveProgress();
+  }
+}
+
 // 页面初始化
 document.addEventListener('DOMContentLoaded', async () => {
   // 加载题库
@@ -34,6 +104,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // 确保题库已加载
   if (window.questionBank && window.questionBank.length > 0) {
+    // 检查是否有保存的进度
+    const savedProgress = loadProgress();
+    if (savedProgress) {
+      // 询问用户是否恢复进度
+      const shouldRestore = confirm(`发现未完成的测试（已答 ${savedProgress.currentIndex} 题，剩余时间 ${Math.floor(savedProgress.timer / 60)}:${String(savedProgress.timer % 60).padStart(2, '0')}）。是否恢复进度？\n\n点击"确定"恢复上次进度，点击"取消"开始新测试。`);
+      if (shouldRestore) {
+        restoreTest(savedProgress);
+        return;
+      } else {
+        // 用户选择开始新测试，清除旧进度
+        clearProgress();
+      }
+    }
+    // 开始新测试
     startTest();
   } else {
     // 尝试重新加载
@@ -56,7 +140,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+  
+  // 页面关闭前自动保存进度
+  window.addEventListener('beforeunload', () => {
+    autoSave();
+  });
 });
+
+// 恢复测试进度
+function restoreTest(progress) {
+  testSessionId = progress.sessionId;
+  currentIndex = progress.currentIndex;
+  correctCount = progress.correctCount;
+  selectedOptions = [...progress.selectedOptions];
+  timer = progress.timer;
+  currentTestQuestions = progress.currentTestQuestions;
+  answerHistory = [...progress.answerHistory];
+  canGoBack = progress.canGoBack;
+  
+  // 重新启动计时器（从保存的时间继续）
+  startTimer(progress.timer);
+  loadQuestion();
+  
+  console.log(`测试进度已恢复：第 ${currentIndex + 1} 题，答对 ${correctCount} 题，剩余时间 ${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')}`);
+}
 
 // 开始测试
 function startTest() {
@@ -64,6 +171,9 @@ function startTest() {
     alert('题库尚未加载完成，请稍后重试。');
     return;
   }
+  
+  // 生成新的测试会话ID
+  testSessionId = Date.now().toString();
   
   currentIndex = 0;
   correctCount = 0;
@@ -76,6 +186,9 @@ function startTest() {
   
   startTimer();
   loadQuestion();
+  
+  // 保存初始进度
+  autoSave();
 }
 
 // 加载题目
@@ -143,6 +256,9 @@ function selectOption(idx) {
   
   // 至少选择一个选项才能进入下一题
   nextButton.disabled = selectedOptions.length === 0;
+  
+  // 自动保存进度
+  autoSave();
 }
 
 // 更新按钮状态
@@ -176,6 +292,9 @@ function nextQuestion() {
   currentIndex += 1;
   canGoBack = true; // 允许返回上一题
   loadQuestion();
+  
+  // 自动保存进度
+  autoSave();
 }
 
 // 返回上一题
@@ -208,11 +327,14 @@ function prevQuestion() {
   
   // 加载题目
   loadQuestion();
+  
+  // 自动保存进度
+  autoSave();
 }
 
 // 启动计时器
-function startTimer() {
-  timer = TIMER_DURATION;
+function startTimer(initialTime = null) {
+  timer = initialTime !== null ? initialTime : TIMER_DURATION;
   updateTimerDisplay();
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
@@ -265,6 +387,8 @@ function showPaymentPanel() {
 function verifyAccessCode() {
   const code = accessCodeInput.value.trim();
   if (code === 'Hi_NoahTsang') {
+    // 清除保存的进度（测试已完成）
+    clearProgress();
     // 跳转到结果页面
     window.location.href = `result.html?correct=${correctCount}&total=${TOTAL_QUESTIONS}`;
     return true;
