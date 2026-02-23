@@ -12,10 +12,13 @@ async function loadQuestionBank() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     questionBank = await response.json();
+    // 设置为全局变量，供其他脚本访问
+    window.questionBank = questionBank;
     console.log(`题库加载成功，共 ${questionBank.length} 道题`);
     return questionBank;
   } catch (error) {
     console.error('加载题库失败:', error);
+    window.questionBank = [];
     return [];
   }
 }
