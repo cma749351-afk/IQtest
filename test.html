@@ -35,34 +35,53 @@
       </div>
     </div>
 
-    <!-- 支付验证页面（初始隐藏） -->
+    <!-- 支付页面（初始隐藏） -->
     <div id="payment-panel" class="payment-panel hidden">
       <div class="payment-content">
-        <h2>验证查看结果</h2>
+        <h2>查看完整结果</h2>
         <div class="payment-info">
           <div class="payment-icon">🔒</div>
-          <p class="payment-text">你的 IQ 测试已完成！输入测试验证码即可免费查看完整结果与分析。</p>
+          <p class="payment-text">你的 IQ 测试已完成！请选择支付方式查看完整结果与分析。</p>
           <div class="payment-features">
             <div class="payment-feature">✅ 详细 IQ 估值与百分比排名</div>
             <div class="payment-feature">✅ 钟形曲线可视化分析</div>
             <div class="payment-feature">✅ 与全球人口比较数据</div>
+            <div class="payment-feature">✅ 个性化智力分析报告</div>
           </div>
         </div>
         
         <div class="payment-options">
           <div class="payment-option">
-            <div class="option-title">免费查看结果</div>
-            <div class="option-description">输入测试验证码可免费查看完整结果</div>
-            <div class="input-group">
-              <input type="text" id="access-code" placeholder="输入验证码" />
-              <button id="submit-code" class="secondary">验证</button>
-            </div>
-            <div class="hint">测试验证码: <code>Hi_NoahTsang</code></div>
+            <div class="option-title">支付宝支付</div>
+            <div class="option-description">安全快捷，支持支付宝扫码支付</div>
+            <div class="option-price">¥9.90</div>
+            <button id="alipay-button" class="primary" style="background-color: #009fe3; border-color: #009fe3;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span>支付宝支付</span>
+              </span>
+            </button>
+          </div>
+          
+          <div class="payment-option">
+            <div class="option-title">微信支付</div>
+            <div class="option-description">微信扫码支付，即时到账</div>
+            <div class="option-price">¥9.90</div>
+            <button id="wechat-button" class="primary" style="background-color: #07c160; border-color: #07c160;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span>微信支付</span>
+              </span>
+            </button>
+          </div>
+          
+          <div class="payment-option">
+            <div class="option-title">免费试用（限时）</div>
+            <div class="option-description">免费查看基础结果，完整报告需付费</div>
+            <button id="free-preview-button" class="secondary">免费查看基础结果</button>
           </div>
         </div>
         
         <div class="payment-note">
-          <p>这是一个演示页面。在实际部署中，这里可以集成支付网关。</p>
+          <p>支付成功后，将自动跳转到结果页面查看完整分析。</p>
         </div>
       </div>
     </div>
@@ -79,6 +98,41 @@
       
       if (testPanel) testPanel.classList.remove('hidden');
       if (paymentPanel) paymentPanel.classList.add('hidden');
+      
+      // 支付按钮事件监听
+      const alipayButton = document.getElementById('alipay-button');
+      const wechatButton = document.getElementById('wechat-button');
+      const freePreviewButton = document.getElementById('free-preview-button');
+      
+      if (alipayButton) {
+        alipayButton.addEventListener('click', () => {
+          alert('模拟支付宝支付成功！正在跳转到结果页面...');
+          // 模拟支付成功后跳转到结果页面
+          const correct = window.correctCount || 0;
+          const total = window.currentTestQuestions ? window.currentTestQuestions.length : 30;
+          window.location.href = `result.html?correct=${correct}&total=${total}`;
+        });
+      }
+      
+      if (wechatButton) {
+        wechatButton.addEventListener('click', () => {
+          alert('模拟微信支付成功！正在跳转到结果页面...');
+          // 模拟支付成功后跳转到结果页面
+          const correct = window.correctCount || 0;
+          const total = window.currentTestQuestions ? window.currentTestQuestions.length : 30;
+          window.location.href = `result.html?correct=${correct}&total=${total}`;
+        });
+      }
+      
+      if (freePreviewButton) {
+        freePreviewButton.addEventListener('click', () => {
+          alert('免费基础结果已生成！完整报告需付费解锁。');
+          // 免费试用跳转到结果页面
+          const correct = window.correctCount || 0;
+          const total = window.currentTestQuestions ? window.currentTestQuestions.length : 30;
+          window.location.href = `result.html?correct=${correct}&total=${total}&free=true`;
+        });
+      }
     });
   </script>
 </body>

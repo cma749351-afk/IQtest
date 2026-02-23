@@ -4,6 +4,9 @@
 let questionBank = []; // 从JSON文件加载的题库
 const QUESTION_BANK_URL = 'questions.json';
 
+// 初始化全局变量
+window.questionBank = [];
+
 // 加载题库的异步函数
 async function loadQuestionBank() {
   try {

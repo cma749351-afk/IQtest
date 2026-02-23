@@ -1,4 +1,4 @@
-// 测试页面脚本 - 支持多选模式（复选框）
+// 测试页面脚本 - 支持单选模式（单选按钮）
 
 // 常量定义
 const TOTAL_QUESTIONS = 30;
@@ -8,7 +8,7 @@ const STORAGE_KEY = 'iqTestProgress'; // localStorage 进度存储键
 // 状态变量
 let currentIndex = 0;
 let correctCount = 0;
-let selectedOptions = []; // 改为数组，支持多选
+let selectedOptions = null; // 单选模式：存储单个选项索引
 let timer = TIMER_DURATION;
 let timerInterval = null;
 let currentTestQuestions = []; // 当前测试的随机题目
@@ -26,8 +26,6 @@ const scoreLabel = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const prevButton = document.getElementById('prev-button');
 const nextButton = document.getElementById('next-button');
-const accessCodeInput = document.getElementById('access-code');
-const submitCodeButton = document.getElementById('submit-code');
 
 // 进度保存与恢复函数
 function saveProgress() {
@@ -38,7 +36,7 @@ function saveProgress() {
     timestamp: Date.now(),
     currentIndex,
     correctCount,
-    selectedOptions: [...selectedOptions],
+    selectedOptions: selectedOptions, // 单选模式：直接存储值
     timer,
     currentTestQuestions: currentTestQuestions.map(q => ({
       prompt: q.prompt,
@@ -132,14 +130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 事件监听
   if (prevButton) prevButton.addEventListener('click', prevQuestion);
   if (nextButton) nextButton.addEventListener('click', nextQuestion);
-  if (submitCodeButton && accessCodeInput) {
-    submitCodeButton.addEventListener('click', verifyAccessCode);
-    accessCodeInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        verifyAccessCode();
-      }
-    });
-  }
   
   // 页面关闭前自动保存进度
   window.addEventListener('beforeunload', () => {
@@ -201,34 +191,35 @@ function loadQuestion() {
   const question = currentTestQuestions[currentIndex];
   questionText.textContent = question.prompt;
   optionsContainer.innerHTML = '';
-  selectedOptions = [];
+  selectedOptions = null; // 改为单选，存储单个值而不是数组
   nextButton.disabled = true;
 
   // 检查是否有历史记录
   const history = answerHistory[currentIndex];
-  if (history) {
-    selectedOptions = [...history.selected];
+  if (history && history.selected !== undefined) {
+    selectedOptions = history.selected;
   }
 
-  // 创建多选复选框选项
+  // 创建单选按钮选项（单选模式）
   question.options.forEach((option, idx) => {
     const optionItem = document.createElement('div');
     optionItem.className = 'option-item';
     
-    // 创建复选框
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = `option-${idx}`;
-    checkbox.value = idx;
-    checkbox.checked = selectedOptions.includes(idx);
-    checkbox.addEventListener('change', () => selectOption(idx));
+    // 创建单选按钮
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'question-option'; // 所有选项共享相同的name，确保单选
+    radio.id = `option-${idx}`;
+    radio.value = idx;
+    radio.checked = selectedOptions === idx;
+    radio.addEventListener('change', () => selectOption(idx));
     
     // 创建标签
     const label = document.createElement('label');
     label.htmlFor = `option-${idx}`;
     label.textContent = option;
     
-    optionItem.appendChild(checkbox);
+    optionItem.appendChild(radio);
     optionItem.appendChild(label);
     optionsContainer.appendChild(optionItem);
   });
@@ -240,22 +231,13 @@ function loadQuestion() {
   updateButtonStates();
 }
 
-// 选择/取消选择选项（多选模式）
+// 选择选项（单选模式）
 function selectOption(idx) {
-  const checkbox = document.getElementById(`option-${idx}`);
+  // 单选逻辑：直接设置当前选择，取消其他选项由浏览器radio组自动处理
+  selectedOptions = idx;
   
-  if (checkbox.checked) {
-    // 添加选项到选择列表
-    if (!selectedOptions.includes(idx)) {
-      selectedOptions.push(idx);
-    }
-  } else {
-    // 从选择列表中移除选项
-    selectedOptions = selectedOptions.filter(option => option !== idx);
-  }
-  
-  // 至少选择一个选项才能进入下一题
-  nextButton.disabled = selectedOptions.length === 0;
+  // 只要有选择就能进入下一题
+  nextButton.disabled = false;
   
   // 自动保存进度
   autoSave();
@@ -266,22 +248,21 @@ function updateButtonStates() {
   // 上一题按钮：只有在不是第一题且有历史记录时才可用
   if (prevButton) prevButton.disabled = currentIndex === 0;
   
-  // 下一题按钮：只有在当前题目有选择时才可用
-  if (nextButton) nextButton.disabled = selectedOptions.length === 0;
+  // 下一题按钮：只有在当前题目有选择时才可用（单选模式）
+  if (nextButton) nextButton.disabled = selectedOptions === null || selectedOptions === undefined;
 }
 
 // 下一题
 function nextQuestion() {
-  if (selectedOptions.length === 0) return;
+  if (selectedOptions === null || selectedOptions === undefined) return;
   const question = currentTestQuestions[currentIndex];
   
-  // 多选模式下的正确判断：只要选择的选项中包含正确答案就算正确
-  const hasCorrectAnswer = selectedOptions.includes(question.answer);
-  const wasCorrect = hasCorrectAnswer;
+  // 单选模式下的正确判断：选择的选项必须等于正确答案
+  const wasCorrect = selectedOptions === question.answer;
   
   // 保存当前题目的历史记录
   answerHistory[currentIndex] = {
-    selected: [...selectedOptions],
+    selected: selectedOptions,
     correct: wasCorrect
   };
   
@@ -361,7 +342,7 @@ function finishTest() {
   showPaymentPanel();
 }
 
-// 显示支付验证页面
+// 显示支付页面
 function showPaymentPanel() {
   // 计算测试统计
   const testStats = calculateIQStats(correctCount, TOTAL_QUESTIONS);
@@ -373,40 +354,16 @@ function showPaymentPanel() {
     stats: testStats
   }));
   
-  // 显示支付验证页面
+  // 显示支付页面
   if (testPanel) testPanel.classList.add('hidden');
   if (paymentPanel) paymentPanel.classList.remove('hidden');
-  
-  // 清空输入框
-  if (accessCodeInput) {
-    accessCodeInput.value = '';
-  }
 }
 
-// 支付验证函数
-function verifyAccessCode() {
-  const code = accessCodeInput.value.trim();
-  if (code === 'Hi_NoahTsang') {
-    // 清除保存的进度（测试已完成）
-    clearProgress();
-    // 跳转到结果页面
-    window.location.href = `result.html?correct=${correctCount}&total=${TOTAL_QUESTIONS}`;
-    return true;
-  } else {
-    alert('验证码错误，请重试。测试验证码: Hi_NoahTsang');
-    if (accessCodeInput) {
-      accessCodeInput.focus();
-      accessCodeInput.select();
-    }
-    return false;
-  }
-}
-
-// 添加多选模式的CSS样式
-function addMultiSelectStyles() {
-  if (!document.getElementById('multi-select-styles')) {
+// 添加单选模式的CSS样式
+function addSingleSelectStyles() {
+  if (!document.getElementById('single-select-styles')) {
     const style = document.createElement('style');
-    style.id = 'multi-select-styles';
+    style.id = 'single-select-styles';
     style.textContent = `
       .option-item {
         display: flex;
@@ -425,7 +382,7 @@ function addMultiSelectStyles() {
         border-color: var(--accent);
       }
       
-      .option-item input[type="checkbox"] {
+      .option-item input[type="radio"] {
         width: 20px;
         height: 20px;
         cursor: pointer;
@@ -448,5 +405,5 @@ function addMultiSelectStyles() {
   }
 }
 
-// 初始化多选样式
-addMultiSelectStyles();
+// 初始化单选样式
+addSingleSelectStyles();
